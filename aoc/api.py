@@ -1,5 +1,8 @@
+import re
+from typing import Any
+
 from .context import aoc_context
-from .logger import crit
+from .logger import crit, error, info, warn
 
 
 def day_input() -> str:
@@ -27,3 +30,46 @@ def day_input() -> str:
 
 def day_input_lines() -> list[str]:
     return day_input().splitlines()
+
+
+def submit_answer(part: int, answer: Any, ignore_answers: list[int] | None = None) -> None:
+    prefix = f'answer {part} ({answer})'
+
+    if aoc_context.is_demo:
+        warn(f'{prefix}: skipped (in demo)')
+        return
+
+    if ignore_answers and answer in ignore_answers:
+        error(f'{prefix}: skipped (explicitly ignored)')
+        return
+
+    resp = aoc_context.http_session.post(
+        f'https://adventofcode.com/{aoc_context.year}/day/{aoc_context.day}/answer',
+        data={
+            'level': str(part),
+            'answer': str(answer),
+        },
+    )
+    content = resp.text.lower()
+
+    if resp.status_code != 200:
+        error(f'{prefix}: rejected due to status_code != 200 ({resp.status_code})')
+        return
+
+    if 'did you already complete it' in content:
+        warn(f'{prefix}: skipped (already solved)')
+        return
+
+    if "that's the right answer" in content:
+        info(f'{prefix}: correct')
+        return
+
+    if 'you have to wait' in content:
+        occ = re.findall(r'you have ([\w ]+) left to wait', resp.text)
+        reason = 'too fast'
+        if occ:
+            reason = f'too fast, {occ[0]} left to wait'
+        warn(f'{prefix}: rejected ({reason})')
+        return
+
+    error(f'{prefix}: wrong answer')

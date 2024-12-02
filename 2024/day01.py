@@ -16,7 +16,7 @@ for line in day_input_lines():
     rc[b] += 1
 
 answer(1, sum(abs(a - b) for a, b in zip(sorted(lv), sorted(rv), strict=False)))
-expect_answer(1, 11, for_demo=True)
+expect_demo_answer(1, 11)
 
 answer(2, sum(x * rc[x] for x in lv))
-expect_answer(2, 31, for_demo=True)
+expect_demo_answer(2, 31)

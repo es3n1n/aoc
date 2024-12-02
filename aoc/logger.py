@@ -12,6 +12,7 @@ class LogLevel(enum.Enum):
     FIXME = 'fix'
     ERROR = 'err'
     CRITICAL = 'crit'
+    WARN = 'warn'
 
 
 @dataclass
@@ -23,6 +24,7 @@ class LogConfig:
         LogLevel.MSG: '\033[0m',  # Default
         LogLevel.INFO: '\033[32m',  # Green
         LogLevel.TODO: '\033[33m',  # Yellow
+        LogLevel.WARN: '\033[33m',  # Yellow
         LogLevel.FIXME: '\033[35m',  # Magenta
         LogLevel.ERROR: '\033[31m',  # Red
         LogLevel.CRITICAL: '\033[1;31m',  # Bold Red
@@ -53,7 +55,8 @@ class Logger:
         return formatted
 
     def _write(self, level: LogLevel, message: str) -> None:
-        formatted = self._format_message(level, message)
+        # str() to allow passing non-strs while debugging
+        formatted = self._format_message(level, str(message))
 
         print(formatted, file=sys.stdout if level != LogLevel.ERROR else sys.stderr)
         sys.stdout.flush()
@@ -77,6 +80,9 @@ class Logger:
         self._write(LogLevel.CRITICAL, message)
         sys.exit(1)
 
+    def warn(self, message: str) -> None:
+        self._write(LogLevel.WARN, message)
+
 
 default_logger = Logger()
 msg = default_logger.msg
@@ -85,3 +91,4 @@ todo = default_logger.todo
 fixme = default_logger.fixme
 error = default_logger.error
 crit = default_logger.crit
+warn = default_logger.warn
