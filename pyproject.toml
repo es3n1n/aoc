@@ -1,0 +1,55 @@
+[tool.poetry]
+name = "aoc"
+version = "1.0.0"
+description = ""
+authors = ["es3n1n <me@es3n.in>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+requests = "^2.32.3"
+loguru = "^0.7.2"
+typer = "^0.14.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.8.1"
+mypy = "^1.13.0"
+types-requests = "^2.32.0.20241016"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    # Conflicting stuff
+    "D211", "D212", "D203", "COM812", "ISC001",
+    # We need a new line at the end of file
+    "W391",
+    # No docs
+    "D",
+    # No modules for some parts
+    "INP001",
+    # Allow prints
+    "T201",
+    # Allow magic values
+    "PLR2004",
+    # Allow star imports
+    "F405", "F403",
+    # Allow any,
+    "ANN401",
+]
+flake8-quotes.inline-quotes = "single"
+
+[tool.ruff.format]
+quote-style = "single"
+line-ending = "lf"
+
+[tool.ruff.lint.isort]
+lines-after-imports = 2
+combine-as-imports = false
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
