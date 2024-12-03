@@ -37,8 +37,8 @@ def unsafe_forgiving_counter(params: list[int]) -> int:
 
 pt1 = 0
 pt2 = 0
-for line in day_input_lines():
-    c = unsafe_forgiving_counter(list(map(int, line.split())))
+for ints in day_input_lines_ints():
+    c = unsafe_forgiving_counter(ints)
     if c == 0:
         pt1 += 1
         pt2 += 1

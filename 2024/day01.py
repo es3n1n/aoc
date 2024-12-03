@@ -9,8 +9,7 @@ lv: list[int] = []
 rv: list[int] = []
 rc: defaultdict[int, int] = defaultdict(int)
 
-for line in day_input_lines():
-    a, b = map(int, line.split())
+for a, b in day_input_lines_ints():
     lv.append(a)
     rv.append(b)
     rc[b] += 1

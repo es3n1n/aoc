@@ -1,5 +1,6 @@
 import re
 import sys
+from collections.abc import Iterator
 from platform import platform
 from typing import Any
 
@@ -42,6 +43,11 @@ def day_input() -> str:
 
 def day_input_lines() -> list[str]:
     return day_input().splitlines()
+
+
+def day_input_lines_ints(separator: str | None = None, max_split: int = -1) -> Iterator[list[int]]:
+    for line in day_input_lines():
+        yield list(map(int, line.split(sep=separator, maxsplit=max_split)))
 
 
 def submit_answer(part: int, answer: Any, ignore_answers: list[int] | None = None) -> None:
