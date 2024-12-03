@@ -1,4 +1,6 @@
 import re
+import sys
+from platform import platform
 from typing import Any
 
 from .context import aoc_context
@@ -17,8 +19,18 @@ def day_input() -> str:
     cached_input_path.parent.mkdir(parents=True, exist_ok=True)
 
     if aoc_context.is_demo:
-        cached_input_path.write_text('')
-        crit(f'Missing demo data, please paste it to {cached_input_path}')
+        keybind = 'Ctrl + D'
+        if 'windows' in platform().lower():
+            keybind = 'Ctrl + Z + Enter'
+        warn(f'Missing demo data, please paste it here and press {keybind}')
+
+        demo_data = ''
+        for line in sys.stdin:
+            demo_data += line
+
+        cached_input_path.write_text(demo_data, 'utf-8')
+        info('Saved demo data')
+        return demo_data
 
     response = aoc_context.http_session.get(f'https://adventofcode.com/{aoc_context.year}/day/{aoc_context.day}/input')
     if response.status_code != 200:
