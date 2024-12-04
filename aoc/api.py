@@ -8,14 +8,19 @@ from .context import aoc_context
 from .logger import crit, error, info, warn
 
 
-def day_input() -> str:
+def day_input(*, stripped: bool = False) -> str:
+    def _proceed(s: str) -> str:
+        if stripped:
+            s = s.strip()
+        return s
+
     file_name = str(aoc_context.day)
     if aoc_context.is_demo:
         file_name += '.demo'
 
     cached_input_path = aoc_context.year_dir / 'inputs' / file_name
     if cached_input_path.exists():
-        return cached_input_path.read_text('utf-8')
+        return _proceed(cached_input_path.read_text('utf-8'))
 
     cached_input_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -31,22 +36,24 @@ def day_input() -> str:
 
         cached_input_path.write_text(demo_data, 'utf-8')
         info('Saved demo data')
-        return demo_data
+        return _proceed(demo_data)
 
     response = aoc_context.http_session.get(f'https://adventofcode.com/{aoc_context.year}/day/{aoc_context.day}/input')
     if response.status_code != 200:
         crit(f'Got {response.status_code} while trying to get the input for day {aoc_context.day}')
 
     cached_input_path.write_text(response.text)
-    return response.text
+    return _proceed(response.text)
 
 
-def day_input_lines() -> list[str]:
-    return day_input().splitlines()
+def day_input_lines(*, stripped: bool = False) -> list[str]:
+    return day_input(stripped=stripped).splitlines()
 
 
-def day_input_lines_ints(separator: str | None = None, max_split: int = -1) -> Iterator[list[int]]:
-    for line in day_input_lines():
+def day_input_lines_ints(
+    separator: str | None = None, max_split: int = -1, *, stripped: bool = False
+) -> Iterator[list[int]]:
+    for line in day_input_lines(stripped=stripped):
         yield list(map(int, line.split(sep=separator, maxsplit=max_split)))
 
 

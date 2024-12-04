@@ -1,0 +1,15 @@
+from aoc import *
+
+
+aoc_setup(2024, 4)
+pt1 = 0
+pt2 = 0
+
+for line in day_input_lines():
+    pass
+
+answer(1, pt1, auto_submit=True)
+expect_demo_answer(1, 1337)
+
+# answer(2, pt2, auto_submit=True)
+# expect_demo_answer(2, 1337)
