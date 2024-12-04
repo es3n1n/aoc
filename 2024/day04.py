@@ -2,110 +2,72 @@ from aoc import *
 
 
 aoc_setup(2024, 4)
-
-pt1 = 0
-pt2 = 0
-
 lines = day_input_lines()
 lc = len(lines)
-seen_patterns = set()
+llc = len(lines[0])
 
 
 def _check(s: str, val: str) -> bool:
-    return any(
-        x == val
-        for x in (
-            s,
-            s[::-1],
-        )
-    )
+    return s == val or s[::-1] == val
 
 
-def is_xmas(s: str) -> bool:
-    return _check(s, 'XMAS')
+def get_string_in_direction(
+    start_row: int, start_col: int, d_row: int, d_col: int, length: int
+) -> tuple[str, set[tuple[int, int]]]:
+    if not (0 <= start_row + (length - 1) * d_row < lc and 0 <= start_col + (length - 1) * d_col < llc):
+        return '', set()
+
+    string = []
+    coords = set()
+    for kk in range(length):
+        r = start_row + kk * d_row
+        c = start_col + kk * d_col
+
+        string.append(lines[r][c])
+        coords.add((r, c))
+    return ''.join(string), coords
 
 
-def is_mas(s: str) -> bool:
-    return _check(s, 'MAS')
+directions = (
+    (0, 1),
+    (1, 0),
+    (1, 1),
+    (1, -1),
+    (-1, 1),
+    (-1, -1),
+)
+seen_patterns = set()
 
-
+pt1 = 0
 for i in range(lc):
-    for j in range(len(lines[i])):
-        if j + 3 < len(lines[i]):
-            s = ''.join(lines[i][j : j + 4])
-            if is_xmas(s):
-                pattern = frozenset((i, j + k) for k in range(4))
-                if pattern not in seen_patterns:
-                    seen_patterns.add(pattern)
-                    pt1 += 1
+    for j in range(llc):
+        for dr, dc in directions:
+            s, coords = get_string_in_direction(i, j, dr, dc, 4)
+            if not _check(s, 'XMAS'):
+                continue
 
-        if i >= 3:
-            s = ''.join(lines[i - k][j] for k in range(4))
-            if is_xmas(s):
-                pattern = frozenset((i - k, j) for k in range(4))
-                if pattern not in seen_patterns:
-                    seen_patterns.add(pattern)
-                    pt1 += 1
+            pattern = frozenset(coords)
+            if pattern in seen_patterns:
+                continue
 
-        if i <= (lc - 4):
-            s = ''.join(lines[i + k][j] for k in range(4))
-            if is_xmas(s):
-                pattern = frozenset((i + k, j) for k in range(4))
-                if pattern not in seen_patterns:
-                    seen_patterns.add(pattern)
-                    pt1 += 1
+            seen_patterns.add(pattern)
+            pt1 += 1
 
-        if (i + 3) < lc and (j + 3) < len(lines[i]):
-            s = ''.join(lines[i + k][j + k] for k in range(4))
-            if is_xmas(s):
-                pattern = frozenset((i + k, j + k) for k in range(4))
-                if pattern not in seen_patterns:
-                    seen_patterns.add(pattern)
-                    pt1 += 1
-
-        if (i + 3) < lc and j >= 3:
-            s = ''.join(lines[i + k][j - k] for k in range(4))
-            if is_xmas(s):
-                pattern = frozenset((i + k, j - k) for k in range(4))
-                if pattern not in seen_patterns:
-                    seen_patterns.add(pattern)
-                    pt1 += 1
-
-        if i >= 3 and (j + 3) < len(lines[i]):
-            s = ''.join(lines[i - k][j + k] for k in range(4))
-            if is_xmas(s):
-                pattern = frozenset((i - k, j + k) for k in range(4))
-                if pattern not in seen_patterns:
-                    seen_patterns.add(pattern)
-                    pt1 += 1
-
-        if i >= 3 and j >= 3:
-            s = ''.join(lines[i - k][j - k] for k in range(4))
-            if is_xmas(s):
-                pattern = frozenset((i - k, j - k) for k in range(4))
-                if pattern not in seen_patterns:
-                    seen_patterns.add(pattern)
-                    pt1 += 1
-
-
+pt2 = 0
 for i in range(1, lc - 1):
-    for j in range(1, len(lines[i]) - 1):
-        c1 = all(
-            is_mas(x)
-            for x in (
-                ''.join(lines[i - 1 + k][j - 1 + k] for k in range(3)),
-                ''.join(lines[i - 1 + k][j + 1 - k] for k in range(3)),
-            )
-        )
-        c2 = all(
-            is_mas(x)
-            for x in (
-                ''.join(lines[i - 1 + k][j + 1 - k] for k in range(3)),
-                ''.join(lines[i - 1 + k][j - 1 + k] for k in range(3)),
-            )
+    for j in range(1, llc - 1):
+        diags = (
+            (
+                get_string_in_direction(i - 1, j - 1, 1, 1, 3)[0],
+                get_string_in_direction(i - 1, j + 1, 1, -1, 3)[0],
+            ),
+            (
+                get_string_in_direction(i - 1, j + 1, 1, -1, 3)[0],
+                get_string_in_direction(i - 1, j - 1, 1, 1, 3)[0],
+            ),
         )
 
-        if c1 or c2:
+        if any(all(_check(s, 'MAS') for s in cross) for cross in diags):
             pt2 += 1
 
 answer(1, pt1, auto_submit=True)
