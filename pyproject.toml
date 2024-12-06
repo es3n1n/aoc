@@ -8,11 +8,13 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 requests = "^2.32.3"
+tqdm = "^4.67.1"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.8.1"
 mypy = "^1.13.0"
 types-requests = "^2.32.0.20241016"
+types-tqdm = "^4.67.0.20241119"
 
 [tool.ruff]
 target-version = "py311"
