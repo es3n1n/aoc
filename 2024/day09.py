@@ -63,8 +63,8 @@ for file_id in trange(max(x or 0 for x in disk), -1, -1):
             break
 
     if bgs is not None:
-        for pos in pos:
-            disk[pos] = None
+        for p in pos:
+            disk[p] = None
         for i in range(count):
             disk[bgs + i] = file_id
 
